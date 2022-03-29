@@ -1,74 +1,80 @@
 ﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OxUE
 {
-	public abstract class Singleton<T> : MonoBehaviour where T : Component
-	{
-		public bool DontDestoryOnLoad = true;
-		#region Fields
+    /// <summary>
+    /// Singleton class. Inherit by passing the inherited type (e.g. class GameManager : Singleton&lt;GameManager&gt;)
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public abstract class Singleton<T> : MonoBehaviour where T : Component
+    {
+        [SerializeField] private bool dontDestroyOnLoad = true;
 
-		/// <summary>
-		/// The instance.
-		/// </summary>
-		private static T instance;
+        #region Fields
 
-		private static bool applicationIsQuitting = false;
+        /// <summary>
+        /// The instance.
+        /// </summary>
+        private static T _instance;
 
-		#endregion
+        private static bool _applicationIsQuitting = false;
 
-		#region Properties
+        #endregion
 
-		/// <summary>
-		/// Gets the instance.
-		/// </summary>
-		/// <value>The instance.</value>
-		public static T Instance
-		{
-			get
-			{
-				if (instance == null)
-				{
-					instance = FindObjectOfType<T>();
-					if (instance == null && !applicationIsQuitting)
-					{
-						GameObject obj = new GameObject();
-						obj.name = typeof(T).Name;
-						instance = obj.AddComponent<T>();
-						Debug.LogWarning("[Singleton <" + typeof(T) + ">] Singleton of type doesn't exists in scene! Created " + obj.name);
-					}
-				}
-				return instance;
-			}
-		}
+        #region Properties
 
-		#endregion
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <value>The instance.</value>
+        public static T Instance
+        {
+            get
+            {
+                if (_instance == null)
+                {
+                    _instance = FindObjectOfType<T>();
+                    if (_instance == null && !_applicationIsQuitting)
+                    {
+                        GameObject obj = new GameObject();
+                        obj.name = typeof(T).Name;
+                        _instance = obj.AddComponent<T>();
+                        Debug.LogWarning("[Singleton <" + typeof(T) + ">] Singleton of type doesn't exists in scene! Created " + obj.name);
+                    }
+                }
 
-		#region Methods
+                return _instance;
+            }
+        }
 
-		/// <summary>
-		/// Use this for initialization.
-		/// </summary>
-		protected virtual void Awake()
-		{
-			if (instance == null)
-			{
-				instance = this as T;
-				if (DontDestoryOnLoad)
-					DontDestroyOnLoad(gameObject);
-			}
-			else
-			{
-				Debug.LogWarning("[Singleton <" + typeof(T) + ">] Singleton already exists in scene as " + instance.name + "! Destorying " + gameObject.name);
-				Destroy(gameObject);
-			}
-		}
+        #endregion
 
-		public virtual void OnApplicationQuit()
-		{
-			applicationIsQuitting = true;
-		}
+        #region Methods
 
-		#endregion
+        /// <summary>
+        /// Use this for initialization. Don't override it completely!
+        /// </summary>
+        protected virtual void Awake()
+        {
+            if (_instance == null)
+            {
+                _instance = this as T;
+                if (dontDestroyOnLoad)
+                    DontDestroyOnLoad(gameObject);
+            }
+            else
+            {
+                Debug.LogWarning("[Singleton <" + typeof(T) + ">] Singleton already exists in scene as " + _instance.name + "! Destroying " + gameObject.name);
+                Destroy(gameObject);
+            }
+        }
 
-	}
+        public virtual void OnApplicationQuit()
+        {
+            _applicationIsQuitting = true;
+        }
+
+        #endregion
+    }
 }

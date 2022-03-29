@@ -9,10 +9,10 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 647547405517655882}
+  - component: {fileID: 647547405517655886}
   - component: {fileID: 647547405517655883}
   - component: {fileID: 647547405517655880}
   - component: {fileID: 647547405517655881}
-  - component: {fileID: 647547405517655886}
   m_Layer: 5
   m_Name: LoadingUI
   m_TagString: Untagged
@@ -40,6 +40,23 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &647547405517655886
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 647547405517655887}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4afc86797075c404d86f5ee1368f21ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DontDestoryOnLoad: 1
+  showLoadingUIOnStart: 1
+  canvas: {fileID: 647547406585612965}
+  bg: {fileID: 647547406275026202}
+  text: {fileID: 647547406594430159}
 --- !u!223 &647547405517655883
 Canvas:
   m_ObjectHideFlags: 0
@@ -101,23 +118,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 1847
---- !u!114 &647547405517655886
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 647547405517655887}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4afc86797075c404d86f5ee1368f21ac, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DontDestoryOnLoad: 1
-  applyOnStart: 1
-  canvas: {fileID: 647547406585612971}
-  bg: {fileID: 647547406275026202}
-  text: {fileID: 647547406594430159}
 --- !u!1 &647547406275026203
 GameObject:
   m_ObjectHideFlags: 0
@@ -269,7 +269,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &647547406594430157
 RectTransform:
   m_ObjectHideFlags: 0
@@ -318,7 +318,7 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls: []
   m_FontData:
-    m_Font: {fileID: 12800000, guid: 3265b1b8808cd6a4dbe30b807e320c50, type: 3}
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
     m_FontSize: 32
     m_FontStyle: 0
     m_BestFit: 0
@@ -330,4 +330,4 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 
+  m_Text: Loading text

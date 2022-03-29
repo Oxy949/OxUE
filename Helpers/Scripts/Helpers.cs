@@ -8,6 +8,9 @@ using UnityEngine;
 
 namespace OxUE
 {
+    /// <summary>
+    /// Useful functions
+    /// </summary>
     public static class Helpers
     {
         public static Texture2D FlipTexture(Texture2D original)
@@ -127,9 +130,6 @@ namespace OxUE
         
         public static object CreateInstance(string strFullyQualifiedName, object[] paramArray = null)
         {
-
-            
-            //Debug.Log(strFullyQualifiedName);
             Type type = Type.GetType(strFullyQualifiedName);
             if (type != null)
             {

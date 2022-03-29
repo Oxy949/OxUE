@@ -1,47 +1,75 @@
 ﻿using System;
 using DG.Tweening;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 namespace OxUE
 {
+    /// <summary>
+    /// An async loading screen with animations and text.
+    /// </summary>
     public class LoadingUI : Singleton<LoadingUI>
     {
-        public Action<bool> StateChanged;
-        public bool applyOnStart = true;
-        public GameObject canvas;
-        public Image bg;
-        public Text text;
+        public Action<bool> StateChanged { get; set; }
 
-        public new void Awake()
+        [Header("Options:")]
+        [SerializeField] private bool showLoadingUIOnStart = true;
+
+        [Header("References:")]
+        [SerializeField] private CanvasGroup canvas;
+
+        [SerializeField] private Image bg;
+        [SerializeField] private Text text;
+
+        // Initialization
+        private void Start()
         {
-            base.Awake();
-            if (applyOnStart)
+            if (showLoadingUIOnStart)
             {
-                Show(Color.black, null, null, 0);
+                Show();
             }
         }
-        
-        public void SetLoadingText(string textStr = null)
+
+        /// <summary>
+        /// Update loading text
+        /// </summary>
+        /// <param name="loadingText">text</param>
+        public void SetLoadingText(string loadingText = null)
         {
-            text.gameObject.SetActive(!string.IsNullOrWhiteSpace(textStr));
-            text.text = textStr;
+            text.gameObject.SetActive(!string.IsNullOrWhiteSpace(loadingText));
+            text.text = loadingText;
         }
 
-        // Update is called once per frame
-        public void Show(Color bgColor, Action finished = null, string textStr = null, float time = 0.5f)
+        /// <summary>
+        /// Shows the loading screen UI with options
+        /// </summary>
+        /// <param name="ready">Action to do when animation done</param>
+        /// <param name="textStr">Optional text</param>
+        /// <param name="time">Animation time</param>
+        /// <param name="bgColor">Base color</param>
+        /// <param name="useCustomColor"></param>
+        public void Show(Action ready = null, string textStr = null, float time = 0.5f, bool useCustomColor = false, Color bgColor = default)
         {
-            canvas.SetActive(true);
-            bg.color = bgColor;
+            canvas.gameObject.SetActive(true);
+            if (useCustomColor)
+                bg.color = bgColor;
             text.gameObject.SetActive(!string.IsNullOrWhiteSpace(textStr));
             text.text = textStr;
-            canvas.GetComponent<CanvasGroup>().DOFade(1, time).OnComplete(()=> { finished?.Invoke(); StateChanged?.Invoke(true); });
+            canvas.DOFade(1, time).OnComplete(() =>
+            {
+                ready?.Invoke();
+                StateChanged?.Invoke(true);
+            });
         }
 
-        // Update is called once per frame
+        /// <summary>
+        /// Hide the loading screen UI
+        /// </summary>
+        /// <param name="time"></param>
         public void Hide(float time = 0.5f)
         {
-            canvas.GetComponent<CanvasGroup>().DOFade(0, time).OnComplete(() => StateChanged?.Invoke(false));
+            canvas.DOFade(0, time).OnComplete(() => StateChanged?.Invoke(false));
         }
     }
 }

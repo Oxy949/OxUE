@@ -40,10 +40,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 7430730284172583528}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8998dbec881f8ce43bc0752fb815ab41, type: 3}
+  m_Script: {fileID: 11500000, guid: 02ab22545d3823f44a5f85669e395d52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DontDestoryOnLoad: 1
-  currentMode: 0
-  currentPriority: -1
-  lockCursor: 0
+  dontDestroyOnLoad: 1
+  defaultMode: 1
+  cursorTexture: {fileID: 2800000, guid: 9d2b86f22793c174282ac831910b155a, type: 3}

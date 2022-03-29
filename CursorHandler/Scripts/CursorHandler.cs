@@ -1,80 +1,103 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OxUE
 {
+    /// <summary>
+    /// An advanced cursor behavior using state precedence
+    /// </summary>
     public class CursorHandler : Singleton<CursorHandler>
     {
-        public enum CursorIconMode { Hidden, Normal }
+        [Header("Options:")]
+        [SerializeField] private CursorIconMode defaultMode = CursorIconMode.HiddenLocked;
+        [SerializeField] private Texture2D cursorTexture;
 
-        public CursorIconMode currentMode = CursorIconMode.Hidden;
-        [HideInInspector]
-        public int currentPriority = 0;
-
-        private Texture2D _normalCursor;
-        private bool _cursorChanged = true;
-        private bool lockCursor = false;
-
-        private Dictionary<int, CursorIconMode> _priorityList = new Dictionary<int, CursorIconMode> () { };
-
-        // Use this for initialization
-        void Start ()
+        /// <summary>
+        /// HiddenLocked - cursor locked and centered at game window
+        /// Normal - free and visible cursor
+        /// HiddenFree - cursor is hidden but not locked
+        /// </summary>
+        public enum CursorIconMode
         {
-            _normalCursor = Resources.Load<Texture2D>("Cursor/cursor_normal");
-            UpdateCursor();
+            HiddenLocked,
+            Normal,
+            HiddenFree
         }
 
-        public void Reset()
+        private CursorIconMode _currentMode = CursorIconMode.HiddenLocked;
+        private int _currentPriority = 0;
+
+
+        private bool _priorityChanged = true;
+        private bool _lockCursor = false;
+        private bool _hideCursor = false;
+
+        private Dictionary<int, CursorIconMode> _priorityList = new Dictionary<int, CursorIconMode>() { };
+
+        // Initialization
+        private void Start()
         {
-            _priorityList.Clear();
-            currentPriority = 0;
-            currentMode = CursorIconMode.Hidden;
-            UpdateCursor();
+            Reset();
         }
 
-        // Update is called once per frame
-        void Update ()
+        private void Update()
         {
-            if (_cursorChanged)
+            if (_priorityChanged)
             {
                 UpdateCursor();
             }
 
+            // Debug
             //PrintPriorityStack();
         }
 
-        private void PrintPriorityStack()
+        /// <summary>
+        /// Set target cursor priority and updates game cursor
+        /// </summary>
+        /// <param name="mode">Cursor mode to set</param>
+        /// <param name="priority">Mode priority. Bigger the value - bigger the priority</param>
+        public void SetCursorPriority(CursorIconMode mode, uint priority)
         {
-            foreach (var mode in _priorityList)
+            if (_priorityList.ContainsKey((int)priority))
             {
-                Debug.Log(mode.Key + "-" + mode.Value);
-            }
-        }
-
-        public void SetCursorPriority(CursorIconMode mode, int priority)
-        {
-            if (_priorityList.ContainsKey(priority))
-            {
-                _priorityList[priority] = mode;
+                _priorityList[(int)priority] = mode;
             }
             else
-                _priorityList.Add(priority, mode);
+                _priorityList.Add((int)priority, mode);
 
-            _cursorChanged = true;
+            _priorityChanged = true;
         }
 
-        public void RemoveCursorPriority(int priority)
+        /// <summary>
+        /// Remove target cursor priority and updates game cursor
+        /// </summary>
+        /// <param name="priority"></param>
+        public void RemoveCursorPriority(uint priority)
         {
-            if (_priorityList.ContainsKey(priority))
+            if (_priorityList.ContainsKey((int)priority))
             {
-                _priorityList.Remove(priority);
-                _cursorChanged = true;
+                _priorityList.Remove((int)priority);
+                _priorityChanged = true;
             }
         }
+
+        /// <summary>
+        /// Reset all
+        /// </summary>
+        public void Reset()
+        {
+            _priorityList.Clear();
+            _currentPriority = 0;
+            _currentMode = defaultMode;
+            UpdateCursor();
+        }
+
 
         private void UpdateCursor()
         {
-            CursorIconMode mode = CursorIconMode.Hidden;
+            CursorIconMode mode = defaultMode;
             int maxPriority = -1;
 
             foreach (KeyValuePair<int, CursorIconMode> var in _priorityList)
@@ -86,34 +109,42 @@ namespace OxUE
                 }
             }
 
-            currentMode = mode;
-            currentPriority = maxPriority;
+            _currentMode = mode;
+            _currentPriority = maxPriority;
 
 
-            switch (currentMode)
+            switch (_currentMode)
             {
-                case CursorIconMode.Hidden:
-                    Cursor.SetCursor(_normalCursor, Vector2.zero, CursorMode.Auto);
-                    lockCursor = true;
+                case CursorIconMode.HiddenLocked:
+                    Cursor.SetCursor(cursorTexture, Vector2.zero, CursorMode.Auto);
+                    _lockCursor = true;
+                    _hideCursor = true;
                     break;
                 case CursorIconMode.Normal:
-                    Cursor.SetCursor(_normalCursor, Vector2.zero, CursorMode.Auto);
-                    lockCursor = false;
+                    Cursor.SetCursor(cursorTexture, Vector2.zero, CursorMode.Auto);
+                    _lockCursor = false;
+                    _hideCursor = false;
+                    break;
+                case CursorIconMode.HiddenFree:
+                    Cursor.SetCursor(cursorTexture, Vector2.zero, CursorMode.Auto);
+                    _lockCursor = false;
+                    _hideCursor = true;
                     break;
             }
 
-            if (lockCursor)
-            {
-                Cursor.lockState = CursorLockMode.Locked;
-                Cursor.visible = false;
-            }
-            else
-            {
-                Cursor.lockState = CursorLockMode.None;
-                Cursor.visible = true;
-            }
+            Cursor.lockState = _lockCursor ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !_hideCursor;
 
-            _cursorChanged = false;
+            _priorityChanged = false;
+        }
+
+
+        private void PrintPriorityStack()
+        {
+            foreach (var mode in _priorityList)
+            {
+                Debug.Log($"{mode.Key} - {mode.Value}");
+            }
         }
     }
 }
