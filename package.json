@@ -1,7 +1,0 @@
-{
-    "name": "com.oxy949.oxue",
-    "displayName": "Oxy's Unity Extentions Library",
-    "version": "1.0.0",
-    "unity": "2019.3",
-    "description": "Oxy's Unity Extentions Library - small collection of usefull Unity scripts and modules. Requires PlayMaker and DoTween."
-}
